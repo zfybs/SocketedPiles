@@ -1,6 +1,6 @@
 ﻿namespace SocketedShafts.Forms
 {
-    partial class DefinitionManager<T>
+    partial class DefinitionManager<T> 
     {
         /// <summary>
         /// Required designer variable.

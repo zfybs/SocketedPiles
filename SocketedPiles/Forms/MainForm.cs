@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -20,6 +22,10 @@ namespace SocketedShafts.Forms
         #region ---   Fields
 
         private SocketedShaftSystem _sss;
+        /// <summary> 模型画板 </summary>
+        private SssDrawing _drawing;
+
+
         /// <summary> 整个模型中每一个具体土层的信息 </summary>
         private BindingList<SoilLayerEntity> _soilLayers;
         /// <summary> 整个模型中每一个具体桩截面的信息 </summary>
@@ -34,19 +40,21 @@ namespace SocketedShafts.Forms
             InitializeComponent();
 
             //
+            _drawing = new SssDrawing(_pictureBoxSystem);
 
             // 表格
             ConstructdataGridViewShaft();
             ConstructdataGridViewSoilLayers();
 
+            //
             // 事件绑定
             dataGridViewSoilLayers.DataError += DataGridViewSoilLayersOnDataError;
             dataGridViewShaft.DataError += DataGridViewShaftOnDataError;
-            //
-    
+
+            // 绘图事件
+            dataGridViewSoilLayers.CellValueChanged += DataGridViewSoilLayersOnCellValueChanged;
+            dataGridViewShaft.CellValueChanged += DataGridViewShaftOnCellValueChanged;
         }
-
-
 
         public void RefreshModel(SocketedShaftSystem sss)
         {
@@ -56,7 +64,7 @@ namespace SocketedShafts.Forms
             RefreshdataGridViewSoilLayers(sss);
             RefreshdataGridViewShaft(sss);
             //
-        _soilLayers.AddingNew += SoilLayersOnAddingNew;
+            _soilLayers.AddingNew += SoilLayersOnAddingNew;
             _shaftSections.AddingNew += ShaftSectionsOnAddingNew;
 
         }
@@ -88,11 +96,45 @@ namespace SocketedShafts.Forms
             ads.ShowDialog();
         }
 
+
+
+        #endregion
+
+        #region ---  PictureBox 绘图界面的刷新
+
+        // 引发绘图操作的各种事件
+        private void DataGridViewSoilLayersOnCellValueChanged(object sender, DataGridViewCellEventArgs dataGridViewCellEventArgs)
+        {
+            RefreshPaintingWithSss(_sss);
+        }
+
+        private void DataGridViewShaftOnCellValueChanged(object sender, DataGridViewCellEventArgs dataGridViewCellEventArgs)
+        {
+            RefreshPaintingWithSss(_sss);
+        }
+
+        // 绘图
+        private void RefreshPaintingWithSss(SocketedShaftSystem sss)
+        {
+            _drawing.Draw(_sss);
+        }
+
+        // 保存
+        private void buttonSavePicture_Click(object sender, EventArgs e)
+        {
+            string filePath = Utils.ChooseSaveEmf("将模型导出为矢量图");
+            if (filePath.Length > 0)
+            {
+                _drawing.Save(filePath, _sss);
+            }
+        }
+
+        #endregion
+
+        #region ---  整个模型与 xml 文档 的导入导出
         /// <summary> 将整个模型导出到 xml 文档 </summary>
         private void buttonExportToXML_Click(object sender, EventArgs e)
         {
-            ExportToXml(_sss, "../2.sss");
-            return;
             string filePath = Utils.ChooseSaveSSS("导出水平受荷嵌岩桩文件");
             if (filePath.Length > 0)
             {
@@ -112,15 +154,6 @@ namespace SocketedShafts.Forms
             }
         }
 
-        #endregion
-
-        #region ---  PictureBox 绘图界面的刷新
-
-        #endregion
-
-        #region ---  整个模型与 xml 文档 的导入导出
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -138,11 +171,14 @@ namespace SocketedShafts.Forms
 
                 // 同步到全局
                 SocketedShaftSystem.SetUniqueInstance(sss);
+                //
                 this.RefreshModel(sss);
+                // 绘图
+                RefreshPaintingWithSss(_sss);
             }
             catch (Exception ex)
             {
-                DebugUtils.ShowDebugCatch(ex, "");
+                DebugUtils.ShowDebugCatch(ex, "指定的文件不能正常导入为嵌岩桩模型。");
             }
         }
 
@@ -164,6 +200,15 @@ namespace SocketedShafts.Forms
 
         }
 
+
         #endregion
+
+        private void buttonShaft_Click(object sender, EventArgs e)
+        {
+            AddDefinition<SocketedShaft> dds = new AddDefinition<SocketedShaft>(_sss.SocketedShaft);
+            dds.ShowDialog();
+        }
+
+
     }
 }

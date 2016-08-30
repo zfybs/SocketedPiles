@@ -6,7 +6,7 @@ namespace SocketedShafts.Definitions
 {
     /// <summary> 水中桩段或者嵌岩桩段的截面参数 </summary>
     [Serializable()]
-    public class ShaftSection :Definition,  ICloneable
+    public class ShaftSection :Definition
     {
 
         #region ---   XmlAttribute
@@ -39,12 +39,7 @@ namespace SocketedShafts.Definitions
         {
 
         }
-
-        object ICloneable.Clone()
-        {
-            return this.MemberwiseClone();
-        }
-
+        
         #endregion
     }
 }
