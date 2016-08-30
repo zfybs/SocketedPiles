@@ -93,5 +93,26 @@ namespace SocketedShafts
             }
             return "";
         }
+
+        /// <summary> 通过选择文件对话框选择要进行数据写入的Excel文件 </summary>
+        /// <param name="title">对话框的标题</param>
+        /// <returns> 要进行数据写入的Excel文件的绝对路径 </returns>
+        public static string ChooseSaveEmf(string title)
+        {
+            string sss = ".emf";
+            SaveFileDialog ofd = new SaveFileDialog
+            {
+                Title = title,
+                CheckFileExists = false,
+                AddExtension = true,
+                Filter = $"Windows 增强型图元文件 (*{sss})| *{sss}",
+                FilterIndex = 2,  // 默认选择第2项。
+            };
+            if (ofd.ShowDialog() == DialogResult.OK)
+            {
+                return ofd.FileName.Length > 0 ? ofd.FileName : "";
+            }
+            return "";
+        }
     }
 }

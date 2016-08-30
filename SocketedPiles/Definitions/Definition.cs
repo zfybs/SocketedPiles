@@ -10,7 +10,7 @@ namespace SocketedShafts.Definitions
 {
     /// <summary> 水中桩段或者嵌岩桩段的截面参数 </summary>
     [Serializable()]
-    public class Definition
+    public class Definition : ICloneable
     {
         [XmlAttribute()]
         [Category(Categories.Tag), Description("桩截面的名称")]
@@ -27,6 +27,13 @@ namespace SocketedShafts.Definitions
             set { _id = value; }
         }
 
+        [Category(Categories.Tag)]
+        public Definition Self
+        {
+            get { return this; }
+        }
+
+        /// <summary> 构造函数 </summary>
         public Definition()
         {
             _id = Guid.NewGuid();
@@ -37,9 +44,14 @@ namespace SocketedShafts.Definitions
             return _id.Equals((obj as Definition).ID);
         }
 
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
         public override string ToString()
         {
-            return Name + " : " + ID;
+            return Name;
         }
     }
 }

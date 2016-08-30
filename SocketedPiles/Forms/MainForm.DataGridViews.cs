@@ -20,6 +20,7 @@ namespace SocketedShafts.Forms
         {
             dataGridViewSoilLayers.AutoGenerateColumns = false;
             dataGridViewSoilLayers.ShowRowNumber = true;
+            dataGridViewSoilLayers.SupportPaste = true;
         }
 
         private void RefreshdataGridViewSoilLayers(SocketedShaftSystem sss)
@@ -33,10 +34,9 @@ namespace SocketedShafts.Forms
 
             // DataGridViewComboBoxColumn
             ColumnSoil.DataPropertyName = "Layer";
-            ColumnSoil.DisplayMember = ListControlValue<Definition>.DisplayMember;  // 土层定义的标识名称
-            ColumnSoil.ValueMember = ListControlValue<Definition>.ValueMember;  // 土层定义的标识名称
-            // 刷新集合数值
-            RefreshComboBox(ColumnSoil, _sss.SoilDefinitions);
+            ColumnSoil.DisplayMember = "Name";  // 土层定义的标识名称
+            ColumnSoil.ValueMember = "Self";    // 土层定义的标识名称
+            ColumnSoil.DataSource = _sss.SoilDefinitions;
         }
 
         private void DataGridViewSoilLayersOnDataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -60,6 +60,7 @@ namespace SocketedShafts.Forms
         {
             dataGridViewShaft.AutoGenerateColumns = false;
             dataGridViewShaft.ShowRowNumber = true;
+            dataGridViewShaft.SupportPaste = true;
         }
 
         private void RefreshdataGridViewShaft(SocketedShaftSystem sss)
@@ -73,10 +74,10 @@ namespace SocketedShafts.Forms
             ColumnSegment.DataPropertyName = "Section";
 
             // DataGridViewComboBoxColumn
-            ColumnSegment.DisplayMember = ListControlValue<Definition>.DisplayMember;  // 桩截面定义的标识名称
-            ColumnSegment.ValueMember = ListControlValue<Definition>.ValueMember;   // ListControlValue<ShaftSection>.ValueMember;
-            // 刷新集合数值
-            RefreshComboBox(ColumnSegment, _sss.SectionDefinitions);
+            ColumnSegment.DataPropertyName = "Section";
+            ColumnSegment.DisplayMember = "Name";  // 桩截面定义的标识名称
+            ColumnSegment.ValueMember = "Self";    // 土层定义的标识名称
+            ColumnSegment.DataSource = _sss.SectionDefinitions;
         }
 
         private void DataGridViewShaftOnDataError(object sender, DataGridViewDataErrorEventArgs e)
@@ -104,9 +105,7 @@ namespace SocketedShafts.Forms
         /// <returns></returns>
         private void RefreshComboBox(DataGridViewComboBoxColumn column, IEnumerable<Definition> definitions)
         {
-            // 刷新集合中的值
-            BindingList<ListControlValue<Definition>> bindingDefs = TransferDefinitionToComboBox(definitions);
-            column.DataSource = bindingDefs;
+           
             // 设置一个默认的定义
             Definition defaltDef = null;
             if (definitions != null && definitions.Any())
@@ -118,7 +117,7 @@ namespace SocketedShafts.Forms
             var dgv = column.DataGridView;
             foreach (DataGridViewRow r in dgv.Rows)
             {
-                if (r.Index < dgv.RowCount-1)
+                if (r.Index < dgv.RowCount - 1)
                 {
                     DataGridViewComboBoxCell cell = r.Cells[column.Index] as DataGridViewComboBoxCell;
                     Definition df = cell.Value as Definition;
@@ -136,7 +135,7 @@ namespace SocketedShafts.Forms
                                 cell.Value = definitions.First();
                             }
                         }
-                    } 
+                    }
                     else // 说明没有任何有效的定义
                     {
                         cell.Value = null;
