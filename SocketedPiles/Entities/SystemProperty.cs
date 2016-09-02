@@ -25,12 +25,9 @@ namespace SocketedShafts.Entities
 
 
         [XmlAttribute()]
-        [Category(Categories.Elevation), Description("整个模型中的水面绝对标高")]
+        [Category(Categories.Elevation), Description("整个模型中的水面绝对标高，如果没有水，则设置其值为任意低于土层顶部标高的值。")]
         public Single WaterTop { get; set; }
 
-        [XmlAttribute()]
-        [Category(Categories.Elevation), Description("整个模型中的水底(即岩石顶)的绝对标高")]
-        public Single WaterBottom { get; set; }
 
         #endregion
 
@@ -45,7 +42,6 @@ namespace SocketedShafts.Entities
             Es = 210000000;
             //
             WaterTop = 600;
-            WaterBottom = 300;
         }
 
         object ICloneable.Clone()

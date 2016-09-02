@@ -122,7 +122,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="32.ico" />
     <Content Include="SSS.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

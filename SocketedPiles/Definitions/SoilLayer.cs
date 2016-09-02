@@ -16,11 +16,11 @@ namespace SocketedShafts.Definitions
 
         #region ---  一般性 Property
         [XmlAttribute()]
-        [Category(Categories.Property), Description("土层顶部的弹性模量，单位为 Pa")]
+        [Category(Categories.Property), Description("土层顶部的弹性模量，单位为 MPa")]
         public float E1 { get; set; }
 
         [XmlAttribute()]
-        [Category(Categories.Property), Description("土层顶部的弹性模量，单位为 Pa")]
+        [Category(Categories.Property), Description("土层底部的弹性模量，单位为 MPa")]
         public float E2 { get; set; }
 
         [XmlAttribute()]
@@ -38,7 +38,6 @@ namespace SocketedShafts.Definitions
         [XmlAttribute()]
         [Category(Categories.Rock), Description("岩石扰动程度，其值为[0,1]，0表示未扰动")]
         public float Disturbance { get; set; }
-
 
         [Category(Categories.Rock), Description("")]
         [XmlAttribute()]
@@ -80,6 +79,15 @@ namespace SocketedShafts.Definitions
 
         public SoilLayer()
         {
+            PoissonRatio = 0.3f;
+            mi = 10f;
+            GSI = 35f;
+            E1 = 1e9f;
+            E2 = 1e9f;
+            Disturbance = 0.2f;
+            Type = SoilType.RockSmooth;
+            EffectiveFrictionAngle = 30;
+            CompressiveStrength = 2e7f;
         }
 
         #endregion
