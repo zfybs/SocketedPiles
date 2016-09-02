@@ -28,23 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.buttonExport = new System.Windows.Forms.Button();
             this.buttonAdd = new System.Windows.Forms.Button();
             this.listBox1 = new System.Windows.Forms.ListBox();
             this.buttonRemove = new System.Windows.Forms.Button();
             this.buttonImport = new System.Windows.Forms.Button();
             this.buttonEdit = new System.Windows.Forms.Button();
             this.SuspendLayout();
-            // 
-            // buttonExport
-            // 
-            this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonExport.Location = new System.Drawing.Point(229, 317);
-            this.buttonExport.Name = "buttonExport";
-            this.buttonExport.Size = new System.Drawing.Size(75, 23);
-            this.buttonExport.TabIndex = 2;
-            this.buttonExport.Text = "导出";
-            this.buttonExport.UseVisualStyleBackColor = true;
             // 
             // buttonAdd
             // 
@@ -83,12 +72,13 @@
             // buttonImport
             // 
             this.buttonImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonImport.Location = new System.Drawing.Point(229, 288);
+            this.buttonImport.Location = new System.Drawing.Point(229, 317);
             this.buttonImport.Name = "buttonImport";
             this.buttonImport.Size = new System.Drawing.Size(75, 23);
             this.buttonImport.TabIndex = 2;
             this.buttonImport.Text = "导入";
             this.buttonImport.UseVisualStyleBackColor = true;
+            this.buttonImport.Click += new System.EventHandler(this.buttonImport_Click);
             // 
             // buttonEdit
             // 
@@ -108,7 +98,6 @@
             this.ClientSize = new System.Drawing.Size(316, 352);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.buttonImport);
-            this.Controls.Add(this.buttonExport);
             this.Controls.Add(this.buttonEdit);
             this.Controls.Add(this.buttonRemove);
             this.Controls.Add(this.buttonAdd);
@@ -120,8 +109,6 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.Button buttonExport;
         private System.Windows.Forms.Button buttonAdd;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button buttonRemove;

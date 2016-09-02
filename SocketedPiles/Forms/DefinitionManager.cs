@@ -2,8 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml;
+using System.Xml.Serialization;
+using eZstd.Miscellaneous;
 using SocketedShafts.Definitions;
+using SocketedShafts.Entities;
 
 namespace SocketedShafts.Forms
 {
@@ -145,6 +150,69 @@ namespace SocketedShafts.Forms
             {
                 _definitions.RemoveAt(listBox1.SelectedIndex);
             }
+        }
+
+        #region ---   导入定义
+
+        private void buttonImport_Click(object sender, EventArgs e)
+        {
+            string filePath = Utils.ChooseOpenSSS("导入水平受荷嵌岩桩文件");
+            if (filePath.Length > 0)
+            {
+                try
+                {
+                    //
+                    XmlReader xr = XmlReader.Create(filePath);
+                    //
+                    XmlSerializer ss = new XmlSerializer(typeof(SocketedShaftSystem));
+                    SocketedShaftSystem sss = (SocketedShaftSystem)ss.Deserialize(xr);
+                    xr.Close();
+
+                    // 对于是桩截面还是土层参数定义的不同来分别进行导入
+                    StringBuilder sb = new StringBuilder();
+                    string errorMessage;
+                    if (typeof(T) == typeof(ShaftSection))
+                    {
+                        foreach (ShaftSection s in sss.SectionDefinitions)
+                        {
+                            if (CheckAddDefinition(_definitions, s, out errorMessage))
+                            {
+                                _definitions.Add(s as T);
+                                sb.AppendLine((s as T).Name + " : 成功");
+                            }
+                            else
+                            {
+                                sb.AppendLine((s as T).Name + " : "+ errorMessage );
+                            }
+                        }
+                    }
+                    else if (typeof(T) == typeof(SoilLayer))
+                    {
+                        foreach (SoilLayer s in sss.SoilDefinitions)
+                        {
+                            if (CheckAddDefinition(_definitions, s, out errorMessage))
+                            {
+                                _definitions.Add(s as T);
+                                sb.AppendLine((s as T).Name + " : 成功");
+                            }
+                            else
+                            {
+                                sb.AppendLine((s as T).Name + " : "+ errorMessage );
+                            }
+                        }
+                    }
+
+                    MessageBox.Show("参数导入结束，导入结果： \n\r" + sb.ToString(), "完成", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // _definitions
+                }
+                catch (Exception ex)
+                {
+                    DebugUtils.ShowDebugCatch(ex, "指定的文件不能正常提取其中的定义信息。");
+                }
+            }
+            #endregion
+
         }
     }
 }

@@ -131,17 +131,146 @@ namespace SocketedShafts.Forms
 
         #endregion
 
-        #region ---  整个模型与 xml 文档 的导入导出
+        #region ---  将整个模型导出到 xml 文档
         /// <summary> 将整个模型导出到 xml 文档 </summary>
         private void buttonExportToXML_Click(object sender, EventArgs e)
         {
-            string filePath = Utils.ChooseSaveSSS("导出水平受荷嵌岩桩文件");
-            if (filePath.Length > 0)
+            string errorMessage;
+            if (ValidateModel(_sss, out errorMessage))
             {
-                // "../2.sss"
-                ExportToXml(_sss, filePath);
+                string filePath = Utils.ChooseSaveSSS("导出水平受荷嵌岩桩文件");
+                if (filePath.Length > 0)
+                {
+                    ExportToXml(_sss, filePath);
+                }
+            }
+            else
+            {
+                MessageBox.Show("当前模型不符合导出规范 \n\r" + errorMessage, "提示", MessageBoxButtons.OKCancel,
+                    MessageBoxIcon.Error);
             }
         }
+
+        private bool ValidateModel(SocketedShaftSystem sss, out string errorMessage)
+        {
+            if (string.IsNullOrEmpty(sss.SocketedShaft.Name))
+            {
+                errorMessage = "桩未命名";
+                return false;
+            }
+            if (!ValidateConnectivity(sss.SoilLayers, out errorMessage))
+            {
+                errorMessage = "土层连续性不满足： " + errorMessage;
+                return false;
+            }
+            if (!ValidateConnectivity(sss.SocketedShaft.Sections, out errorMessage))
+            {
+                errorMessage = "桩段连续性不满足： " + errorMessage;
+                return false;
+            }
+            // 检查标高位置是否合适
+            if (sss.SocketedShaft.Sections.First().Top < sss.SoilLayers.First().Top)
+            {
+                errorMessage = "桩顶标高不能低于土层顶部标高 ";
+                return false;
+            }
+
+            if (sss.SocketedShaft.Sections.First().Bottom > sss.SoilLayers.First().Top)
+            {
+                errorMessage = "土层顶部以上（水中）最多只能有一种截面（暂时对于水中桩段的计算只设计均匀截面的情况。）";
+                return false;
+            }
+
+            if ((sss.SocketedShaft.Sections.Last().Bottom > sss.SoilLayers.First().Top)
+                || (sss.SocketedShaft.Sections.Last().Bottom < sss.SoilLayers.Last().Bottom))
+            {
+                errorMessage = "桩底标高必须在土层范围之内 ";
+                return false;
+            }
+
+            //
+            var soilTop = sss.SoilLayers.First().Top;
+            if (soilTop < sss.SystemProperty.WaterTop)
+            {
+                //errorMessage = "水面标高低于土层顶部标高";
+                //return false;
+                sss.SystemProperty.WaterTop = soilTop;
+            }
+
+            errorMessage = "可以成功导出。";
+            return true;
+        }
+
+        /// <summary>
+        /// 保证土层或者桩截面的连续性
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <returns></returns>
+        private bool ValidateConnectivity(IEnumerable<Entity> entities, out string errorMessage)
+        {
+            double precision = 0.001;
+            // 保证桩截面的连续性
+            if (!entities.Any())
+            {
+                errorMessage = "至少要有一层土或一个桩段";
+                return false;
+            }
+
+            int count = entities.Count();
+            int index = 0;
+            float top = entities.First().Top;
+            var it = entities.GetEnumerator();
+            while (it.MoveNext())
+            {
+                var ent = it.Current;
+                if (Math.Abs(top - ent.Top) > precision)
+                {
+                    errorMessage = $"第 {index + 1} 层的顶部标高与其上一层的底部标高不连续";
+                    return false;
+                }
+                else
+                {
+                    top = ent.Bottom;
+                }
+                //
+                if (ent.Top <= ent.Bottom)
+                {
+                    errorMessage = $"第 {index + 1} 层的顶部标高必须高于底部标高";
+                    return false;
+                }
+
+                //
+                index += 1;
+            }
+            errorMessage = "满足连续性";
+            return true;
+        }
+
+        /// <param name="filePath">此路径必须为一个有效的路径</param>
+        private void ExportToXml(SocketedShaftSystem sss, string filePath)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Delete(filePath);
+                }
+                FileStream fs = new FileStream(filePath, FileMode.OpenOrCreate);
+
+                XmlSerializer s = new XmlSerializer(sss.GetType());
+                s.Serialize(fs, sss);
+                fs.Close();
+            }
+            catch (Exception ex)
+            {
+                DebugUtils.ShowDebugCatch(ex, "");
+            }
+
+        }
+
+        #endregion
+
+        #region ---  从 xml 文档导入整个模型信息
 
         /// <summary> 从 xml 文档导入整个模型信息 </summary>
         private void buttonImportFromXML_Click(object sender, EventArgs e)
@@ -182,33 +311,14 @@ namespace SocketedShafts.Forms
             }
         }
 
-        /// <param name="filePath">此路径必须为一个有效的路径</param>
-        private void ExportToXml(SocketedShaftSystem sss, string filePath)
-        {
-            try
-            {
-                FileStream fs = new FileStream(filePath, FileMode.OpenOrCreate);
-
-                XmlSerializer s = new XmlSerializer(sss.GetType());
-                s.Serialize(fs, sss);
-                fs.Close();
-            }
-            catch (Exception ex)
-            {
-                DebugUtils.ShowDebugCatch(ex, "");
-            }
-
-        }
-
-
         #endregion
+
 
         private void buttonShaft_Click(object sender, EventArgs e)
         {
             AddDefinition<SocketedShaft> dds = new AddDefinition<SocketedShaft>(_sss.SocketedShaft);
             dds.ShowDialog();
         }
-
-
+        
     }
 }

@@ -6,7 +6,7 @@ namespace SocketedShafts.Definitions
 {
     /// <summary> 水中桩段或者嵌岩桩段的截面参数 </summary>
     [Serializable()]
-    public class ShaftSection :Definition
+    public class ShaftSection : Definition
     {
 
         #region ---   XmlAttribute
@@ -29,7 +29,7 @@ namespace SocketedShafts.Definitions
 
         [XmlAttribute()]
         [Category(Categories.Property), Description("纵向钢筋的根数")]
-        public float BarsCount { get; set; }
+        public int BarsCount { get; set; }
 
         #endregion
 
@@ -37,9 +37,13 @@ namespace SocketedShafts.Definitions
 
         public ShaftSection()
         {
-
+            Diameter = 2.4f;
+            ThicknessOfSteeltube = 0.01f;
+            DBar = 0.06f;
+            DSteelCage = 2.3f;
+            BarsCount = 28;
         }
-        
+
         #endregion
     }
 }
