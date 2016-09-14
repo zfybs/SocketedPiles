@@ -189,13 +189,13 @@ namespace SocketedShafts.Forms
             }
 
             //
-            var soilTop = sss.SoilLayers.First().Top;
-            if (soilTop < sss.SystemProperty.WaterTop)
-            {
-                //errorMessage = "水面标高低于土层顶部标高";
-                //return false;
-                sss.SystemProperty.WaterTop = soilTop;
-            }
+            //var soilTop = sss.SoilLayers.First().Top;
+            //if (soilTop < sss.SystemProperty.WaterTop)
+            //{
+            //    //errorMessage = "水面标高低于土层顶部标高";
+            //    //return false;
+            //    //sss.SystemProperty.WaterTop = soilTop;
+            //}
 
             errorMessage = "可以成功导出。";
             return true;

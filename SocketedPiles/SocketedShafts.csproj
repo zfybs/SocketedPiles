@@ -38,6 +38,10 @@
     <ApplicationIcon>SSS.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="eZstd, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\eZstd\bin\eZstd.exe</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -114,12 +118,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\eZstd\Projects\eZstd\eZstd.csproj">
-      <Project>{fb9b6528-5424-4b7a-aeba-6733450dc44b}</Project>
-      <Name>eZstd</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SSS.ico" />
